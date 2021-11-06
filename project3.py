@@ -22,16 +22,15 @@ def initGraph(adjList):
     return adjList
 
 
-def restoreCycle(vertex, retList, stopNode):
-    retList.append(stopNode.rank)
-    cur = vertex
-    while cur.rank != stopNode.rank:
+def restoreCycle(vertex, retList):
+    retList.append(vertex.rank)
+    cur = vertex.prev
+    while cur.rank != vertex.rank:
         retList.append(cur.rank)
         cur = cur.prev
-        print(f'retList: {retList}')
         pass
 
-    retList.append(stopNode.rank)
+    retList.append(vertex.rank)
     retList.reverse()
 """
 detectArbitrage
@@ -62,7 +61,7 @@ def detectArbitrage(adjList, adjMat, tol=1e-15):
     for vertex in adjList:
         for neigh in vertex.neigh:
             if vertex.dist != math.inf and neigh.dist > vertex.dist + adjMat[vertex.rank][neigh.rank] + tol:
-                restoreCycle(vertex, retList, neigh)
+                restoreCycle(neigh, retList)
                 print(f'retList: {retList}')
                 return retList
             pass
