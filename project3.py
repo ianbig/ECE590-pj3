@@ -25,12 +25,14 @@ def initGraph(adjList):
 def restoreCycle(vertex, retList):
     retList.append(vertex.rank)
     cur = vertex.prev
-    while cur.rank != vertex.rank:
+    while cur.rank not in retList:
         retList.append(cur.rank)
         cur = cur.prev
         pass
 
-    retList.append(vertex.rank)
+    begin = retList.index(cur.rank)
+    del retList[:begin]
+    retList.append(cur.rank)
     retList.reverse()
 """
 detectArbitrage
@@ -41,7 +43,7 @@ def detectArbitrage(adjList, adjMat, tol=1e-15):
     adjList[0].dist = 0
 
     # import pdb; pdb.set_trace()
-    for _ in range(len(adjList)):
+    for _ in range(len(adjList) - 1):
         # print(f'=========={i} iterations=============')
         for vertex in adjList:
             for neigh in vertex.neigh:
@@ -61,6 +63,8 @@ def detectArbitrage(adjList, adjMat, tol=1e-15):
     for vertex in adjList:
         for neigh in vertex.neigh:
             if vertex.dist != math.inf and neigh.dist > vertex.dist + adjMat[vertex.rank][neigh.rank] + tol:
+                neigh.dist = vertex.dist + adjMat[vertex.rank][neigh.rank]
+                neigh.prev = vertex
                 restoreCycle(neigh, retList)
                 print(f'retList: {retList}')
                 return retList
